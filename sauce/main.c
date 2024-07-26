@@ -10,6 +10,7 @@
 
 #define MOD(k) (event->keyval == (k) && modifiers == (GDK_CONTROL_MASK|GDK_SHIFT_MASK))
 static char *cmd[16] = {SHELL, NULL};
+static char *cwd = NULL;
 static char *embed = NULL;
 
 static struct {
@@ -109,7 +110,7 @@ fuck_init(VteTerminal *term)
 
     vte_terminal_spawn_async(
         term, VTE_PTY_DEFAULT,
-        NULL, cmd, NULL,
+        cwd, cmd, NULL,
         G_SPAWN_DEFAULT,
         NULL, NULL, NULL,
         -1,
@@ -131,6 +132,7 @@ usage(char *prg)
     printf("usage: %s [options...]\n\n", prg);
     printf("options:\n");
     printf("  -h       show help and exit\n");
+    printf("  -d <dir> starts %s in selected directory\n", prg);
     printf("  -e <xid> embeds %s within another X application\n", prg);
     exit(0);
 }
@@ -139,11 +141,15 @@ void
 main(int argc, char **argv)
 {
     for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "-h") == 0) {
+        if (!strcmp(argv[i], "-h")) {
             usage(argv[0]);
         }
-        if (strcmp(argv[i], "-e") == 0) {
+        if (!strcmp(argv[i], "-e")) {
             embed = argv[++i];
+            continue;
+        }
+        if (!strcmp(argv[i], "-d")) {
+            cwd = argv[++i];
             continue;
         }
         else {
