@@ -131,15 +131,18 @@ usage(char *prg)
 {
     printf("usage: %s [options...]\n\n", prg);
     printf("options:\n");
-    printf("  -h       show help and exit\n");
-    printf("  -d <dir> starts %s in selected directory\n", prg);
-    printf("  -e <xid> embeds %s within another X application\n", prg);
+    printf("  -h           show help and exit\n");
+    printf("  -d <dir>     starts %s in selected directory\n", prg);
+    printf("  -e <xid>     embeds %s within another X application\n", prg);
+    printf("  -a <alpha>   set background opacity (from 0..1, default: %.2f)\n", ALPHA);
     exit(0);
 }
 
 void
 main(int argc, char **argv)
 {
+    float alpha = ALPHA;
+
     for (int i = 1; i < argc; ++i) {
         if (!strcmp(argv[i], "-h")) {
             usage(argv[0]);
@@ -152,6 +155,10 @@ main(int argc, char **argv)
             cwd = argv[++i];
             continue;
         }
+        if (!strcmp(argv[i], "-a")) {
+            alpha = atof(argv[++i]);
+            continue;
+        }
         else {
             // TODO: check bounds...
             cmd[1] = "-c";
@@ -161,6 +168,8 @@ main(int argc, char **argv)
             break;
         }
     }
+
+    if (alpha < 0 || alpha > 1) alpha = 1.0;
 
     gtk_init(&argc, &argv);
     fuck.window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_TOPLEVEL));
@@ -178,7 +187,7 @@ main(int argc, char **argv)
     fuck_init(VTE_TERMINAL(fuck.term));
 
     // calling it here because this function conveniently also sets the palette
-    fuck_set_alpha_scale(ALPHA);
+    fuck_set_alpha_scale(alpha);
     gtk_widget_show_all(GTK_WIDGET(fuck.window));
     gtk_widget_grab_focus(fuck.term);
 
