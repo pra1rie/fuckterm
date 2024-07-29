@@ -12,6 +12,7 @@
 static char *cmd[16] = {SHELL, NULL};
 static char *cwd = NULL;
 static char *embed = NULL;
+static float alpha = ALPHA;
 
 static struct {
     GtkWindow *window;
@@ -71,7 +72,7 @@ fuck_key_press(GtkWidget *widget, GdkEventKey *event)
         fuck_set_alpha_scale(fuck.background.alpha < 1? fuck.background.alpha + 0.05 : 1);
     }
     else if (MOD(GDK_KEY_colon)) {
-        fuck_set_alpha_scale(ALPHA);
+        fuck_set_alpha_scale(alpha);
     }
     else {
         return FALSE;
@@ -141,8 +142,6 @@ usage(char *prg)
 void
 main(int argc, char **argv)
 {
-    float alpha = ALPHA;
-
     for (int i = 1; i < argc; ++i) {
         if (!strcmp(argv[i], "-h")) {
             usage(argv[0]);
